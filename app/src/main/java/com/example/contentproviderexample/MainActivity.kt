@@ -1,6 +1,8 @@
 package com.example.contentproviderexample
 
 import android.os.Bundle
+import android.provider.ContactsContract
+import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -11,6 +13,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.example.contentproviderexample.databinding.ActivityMainBinding
 
+private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -29,8 +32,15 @@ class MainActivity : AppCompatActivity() {
 //        setupActionBarWithNavController(navController, appBarConfiguration)
 
         binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            Log.d(TAG,"fab onClick: starts")
+            val projection = arrayOf(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
+
+            val cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
+                projection,
+                null,
+                null,
+                ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
+            Log.d(TAG,"fab onClick: ends")
         }
     }
 
