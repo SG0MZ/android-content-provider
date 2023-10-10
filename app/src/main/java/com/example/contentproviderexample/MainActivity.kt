@@ -1,5 +1,6 @@
 package com.example.contentproviderexample
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.util.Log
@@ -11,6 +12,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.ArrayAdapter
 import com.example.contentproviderexample.databinding.ActivityMainBinding
 
 private const val TAG = "MainActivity"
@@ -19,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
+    @SuppressLint("Range")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -40,6 +43,15 @@ class MainActivity : AppCompatActivity() {
                 null,
                 null,
                 ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
+
+            val contacts = ArrayList<String>()
+            cursor?.use {
+                while (it.moveToNext()) {
+                    contacts.add(it.getString(it.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)))
+                }
+            }
+            val adapter = ArrayAdapter<String>(this,R.layout.contact_detail,R.id.contact_names,contacts)
+
             Log.d(TAG,"fab onClick: ends")
         }
     }
