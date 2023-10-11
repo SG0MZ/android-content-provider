@@ -27,7 +27,7 @@ private const val TAG = "MainActivity"
 private const val REQUEST_CODE_READ_CONTACTS = 1
 class MainActivity : AppCompatActivity() {
 
-    private var readGranted = false
+//    private var readGranted = false
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
         if (hasReadContactPermission == ContextCompat.checkSelfPermission(this, READ_CONTACTS)) {
             Log.d(TAG,"onCreate: permission granted")
-            readGranted = true
+//            readGranted = true
         } else {
             Log.d(TAG,"onCreate: requesting permission")
             ActivityCompat.requestPermissions(this, arrayOf(READ_CONTACTS),
@@ -54,7 +54,8 @@ class MainActivity : AppCompatActivity() {
 
         binding.fab.setOnClickListener { view ->
             Log.d(TAG,"fab onClick: starts")
-            if (readGranted) {
+//            if (readGranted) {
+            if (ContextCompat.checkSelfPermission(this, READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
                 val projection = arrayOf(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
 
                 val cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
@@ -105,12 +106,13 @@ class MainActivity : AppCompatActivity() {
         Log.d(TAG,"onRequestPermissionsResult: starts")
         when(requestCode) {
             REQUEST_CODE_READ_CONTACTS -> {
-                readGranted = if (grantResults.isNotEmpty() && grantResults[0] ==PackageManager.PERMISSION_GRANTED) {
+//                readGranted = if (grantResults.isNotEmpty() && grantResults[0] ==PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.isNotEmpty() && grantResults[0] ==PackageManager.PERMISSION_GRANTED) {
                     Log.d(TAG,"onRequestPermissionsResult: permission granted")
-                    true
+//                    true
                 } else {
                     Log.d(TAG,"onRequestPermissionsResult: permission refused")
-                    false
+//                    false
                 }
             }
         }
