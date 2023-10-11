@@ -15,6 +15,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.contentproviderexample.databinding.ActivityMainBinding
@@ -50,22 +51,29 @@ class MainActivity : AppCompatActivity() {
 
         binding.fab.setOnClickListener { view ->
             Log.d(TAG,"fab onClick: starts")
-            val projection = arrayOf(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
+            if (readGranted) {
+                val projection = arrayOf(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
 
-            val cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
-                projection,
-                null,
-                null,
-                ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
+                val cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,
+                    projection,
+                    null,
+                    null,
+                    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
 
-            val contacts = ArrayList<String>()
-            cursor?.use {
-                while (it.moveToNext()) {
-                    contacts.add(it.getString(it.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)))
+                val contacts = ArrayList<String>()
+                cursor?.use {
+                    while (it.moveToNext()) {
+                        contacts.add(it.getString(it.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)))
+                    }
                 }
+                val adapter = ArrayAdapter<String>(this,R.layout.contact_detail,R.id.contact_names,contacts)
+                contact_names.adapter = adapter
+            } else {
+                Snackbar.make(view,"Please grant access to your Contacts",Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Action",{
+                        Toast.makeText(it.context,"Snackbar action clicked",Toast.LENGTH_SHORT).show()
+                    }).show()
             }
-            val adapter = ArrayAdapter<String>(this,R.layout.contact_detail,R.id.contact_names,contacts)
-
             Log.d(TAG,"fab onClick: ends")
         }
         Log.d(TAG,"onCreate: ends")
@@ -76,6 +84,7 @@ class MainActivity : AppCompatActivity() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         Log.d(TAG,"onRequestPermissionsResult: starts")
         when(requestCode) {
             REQUEST_CODE_READ_CONTACTS -> {
